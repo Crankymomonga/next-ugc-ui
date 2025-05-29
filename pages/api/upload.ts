@@ -1,40 +1,47 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import formidable, { File as FormidableFile } from 'formidable';
+import fs from 'fs';
+import path from 'path';
 
+// Next.jsがbodyParserを使わないように設定
 export const config = {
   api: {
-    bodyParser: false, // ストリーム処理するため
+    bodyParser: false,
   },
 };
 
-// 型定義：ReadableStreamの型を明示
-async function bufferRequestStream(req: ReadableStream<Uint8Array>): Promise<Buffer> {
-  const reader = req.getReader();
-  const chunks: Uint8Array[] = [];
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    if (value) chunks.push(value);
-  }
-
-  return Buffer.concat(chunks);
+// アップロードディレクトリを指定
+const uploadDir = path.join(process.cwd(), '/temp');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  try {
-    const readable = req as unknown as ReadableStream<Uint8Array>; // ← これで any を使わずキャスト
-    const fileBuffer = await bufferRequestStream(readable);
+  const form = formidable({ uploadDir, keepExtensions: true });
 
-    res.status(200).json({
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error('Form parsing error:', err);
+      return res.status(500).json({ message: 'Upload failed on server' });
+    }
+
+    const uploadedFile = files.file as FormidableFile;
+    const filePath = uploadedFile.filepath;
+
+    // ここでAI解析に回せるよう、filePathを渡す
+    console.log('Uploaded file saved at:', filePath);
+
+    return res.status(200).json({
       message: 'ファイル受け取り完了',
-      size: fileBuffer.length,
+      path: filePath,
+      size: uploadedFile.size,
     });
-  } catch (error) {
-    console.error('Upload handler error:', error);
-    res.status(500).json({ message: 'Upload failed on server' });
-  }
+  });
 }
