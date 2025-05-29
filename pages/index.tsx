@@ -5,7 +5,7 @@ export default function Home() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleUpload = async () => {
+  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!file) return;
     setLoading(true);
     const formData = new FormData();
