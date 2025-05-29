@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
+type UploadResult = Record<string, unknown> | null;
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<Record<string, unknown> | null>(null);
+  const [result, setResult] = useState<UploadResult>(null);
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async () => {
@@ -17,7 +19,7 @@ export default function Home() {
         body: formData,
       });
 
-      const data: Record<string, unknown> = await res.json();
+      const data: UploadResult = await res.json();
       setResult(data);
     } catch (error) {
       console.error('Upload failed:', error);
