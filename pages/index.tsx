@@ -2,10 +2,10 @@ import { useState } from 'react';
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<Record<string, unknown> | null>(null); // ← 修正箇所
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async () => {
     if (!file) return;
     setLoading(true);
     const formData = new FormData();
@@ -17,7 +17,7 @@ export default function Home() {
         body: formData,
       });
 
-      const data: Record<string, unknown> = await res.json(); // 明示的に型付け
+      const data: Record<string, unknown> = await res.json();
       setResult(data);
     } catch (error) {
       console.error('Upload failed:', error);
