@@ -2,8 +2,7 @@ import { useState } from 'react';
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null); // ← 修正箇所
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +17,7 @@ export default function Home() {
         body: formData,
       });
 
-      const data = await res.json();
+      const data: Record<string, unknown> = await res.json(); // 明示的に型付け
       setResult(data);
     } catch (error) {
       console.error('Upload failed:', error);
