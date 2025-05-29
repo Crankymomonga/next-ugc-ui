@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { File as FormidableFile } from 'formidable';
 import fs from 'fs';
-import path from 'path';
+
 
 export const config = {
   api: {
