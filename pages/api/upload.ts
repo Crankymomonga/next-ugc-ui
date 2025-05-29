@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 export const config = {
   api: {
@@ -13,7 +15,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const form = formidable({ uploadDir: './temp', keepExtensions: true });
+  const uploadDir = path.join(os.tmpdir(), 'uploads');
+
+  // tempディレクトリを作成（存在しない場合のみ）
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const form = formidable({ uploadDir, keepExtensions: true });
 
   try {
     form.parse(req, (err, fields, files) => {
