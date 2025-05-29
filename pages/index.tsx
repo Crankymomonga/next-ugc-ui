@@ -3,8 +3,6 @@ import { useState } from 'react';
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const [result, setResult] = useState<any>(null);
-
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
