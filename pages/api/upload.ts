@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { File as FormidableFile } from 'formidable';
 import fs from 'fs';
 
-
 export const config = {
   api: {
     bodyParser: false, // ← ファイルアップロードには必要
@@ -23,12 +22,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(500).json({ message: 'Form parsing failed' });
       }
 
-      const uploadedFile = files.file as FormidableFile;
-      if (!uploadedFile || Array.isArray(uploadedFile)) {
+      const fileData = files.file;
+      const uploadedFile = Array.isArray(fileData) ? fileData[0] : fileData;
+
+      if (!uploadedFile) {
         return res.status(400).json({ message: 'No file uploaded' });
       }
 
-      // ここでファイルサイズなどを返すだけ（例）
       const stats = fs.statSync(uploadedFile.filepath);
 
       return res.status(200).json({
@@ -39,6 +39,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error) {
     console.error('Upload handler error:', error);
-    res.status(500).json({ message: 'Upload failed on server' });
+    return res.status(500).json({ message: 'Upload failed on server' });
   }
 }
