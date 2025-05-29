@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import formidable, { File as FormidableFile } from 'formidable';
+import formidable from 'formidable';
 import fs from 'fs';
 
 export const config = {
   api: {
-    bodyParser: false, // ← ファイルアップロードには必要
+    bodyParser: false,
   },
 };
 
@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const fileData = files.file;
       const uploadedFile = Array.isArray(fileData) ? fileData[0] : fileData;
 
-      if (!uploadedFile) {
+      if (!uploadedFile || !uploadedFile.filepath) {
         return res.status(400).json({ message: 'No file uploaded' });
       }
 
