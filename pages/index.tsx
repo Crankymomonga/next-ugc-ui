@@ -14,10 +14,14 @@ export default function Home() {
     formData.append('file', file);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/upload`, {
         method: 'POST',
         body: formData,
       });
+
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
 
       const data: UploadResult = await res.json();
       setResult(data);
@@ -44,6 +48,12 @@ export default function Home() {
       >
         {loading ? 'Uploading...' : 'Upload'}
       </button>
+
+      {file && (
+        <p style={{ marginTop: '1rem' }}>
+          Selected file: <strong>{file.name}</strong>
+        </p>
+      )}
 
       {result && (
         <div style={{ marginTop: '2rem' }}>
