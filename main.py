@@ -6,23 +6,15 @@ from utils.vision import analyze_image
 
 load_dotenv()
 
-# === gcloud-key.json を環境変数からファイルとして保存 ===
+# gcloud-key.json を環境変数から保存
 if os.getenv("GCLOUD_KEY_JSON"):
     with open("gcloud-key.json", "w") as f:
         f.write(os.getenv("GCLOUD_KEY_JSON"))
 
 app = FastAPI()
 
-# ✅ CORS の設定：これが確実に入っていればOK
+# ✅ ここが重要：Vercel 本番 URL を明示
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.post("/upload")
-async def upload_image(file: UploadFile = File(...)):
-    result = await analyze_image(file)
-    return result
+    allow_origins=["https://next-ugc-ui.vercel.app"],
+    allow_credentials=True,_
