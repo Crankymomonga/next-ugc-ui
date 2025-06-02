@@ -9,12 +9,17 @@ export default function Home() {
 
   const handleUpload = async () => {
     if (!file) return;
-    setLoading(true);
+
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
+      setLoading(true);
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL is not defined");
+
+      const res = await fetch(`${apiUrl}/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -23,7 +28,7 @@ export default function Home() {
         throw new Error(`Server error: ${res.status}`);
       }
 
-      const data: UploadResult = await res.json();
+      const data = await res.json();
       setResult(data);
     } catch (error) {
       console.error('Upload failed:', error);
@@ -36,26 +41,11 @@ export default function Home() {
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <h1>UGC IP Verification</h1>
-
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-        accept="image/*"
-      />
-      <button
-        onClick={handleUpload}
-        disabled={!file || loading}
-        style={{ marginLeft: '1rem' }}
-      >
+      <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+      <button onClick={handleUpload} disabled={!file || loading} style={{ marginLeft: '1rem' }}>
         {loading ? 'Uploading...' : 'Upload'}
       </button>
-
-      {file && (
-        <p style={{ marginTop: '1rem' }}>
-          Selected file: <strong>{file.name}</strong>
-        </p>
-      )}
-
+      {file && <p style={{ marginTop: '1rem' }}>Selected file: <strong>{file.name}</strong></p>}
       {result && (
         <div style={{ marginTop: '2rem' }}>
           <h2>Result:</h2>
