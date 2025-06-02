@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type UploadResult = Record<string, unknown> | null;
 
@@ -6,6 +6,11 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<UploadResult>(null);
   const [loading, setLoading] = useState(false);
+
+  // ✅ 起動時に環境変数が読み込まれているかチェック
+  useEffect(() => {
+    console.log("✅ NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
+  }, []);
 
   const handleUpload = async () => {
     if (!file) return;
