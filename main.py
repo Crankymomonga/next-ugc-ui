@@ -13,6 +13,7 @@ if os.getenv("GCLOUD_KEY_JSON"):
 
 app = FastAPI()
 
+# ✅ CORS の設定：これが確実に入っていればOK
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
