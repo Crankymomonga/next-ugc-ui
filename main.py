@@ -1,8 +1,9 @@
+# main.py
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
-from utils.vision import analyze_image
+from utils.vision import analyze_image  # 自前の画像解析処理
 
 load_dotenv()
 
@@ -13,16 +14,15 @@ if os.getenv("GCLOUD_KEY_JSON"):
 
 app = FastAPI()
 
-# ✅ CORS 設定（Vercel からのリクエストを許可）
+# CORS 設定：Vercel の URL を明示
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://next-ugc-ui.vercel.app"],  # デプロイ先ドメインに応じて変更
+    allow_origins=["https://next-ugc-ui.vercel.app"],  # ✅ 本番フロントエンドURL
     allow_credentials=True,
-    allow_methods=["*"],  # または ["GET", "POST", "OPTIONS"] に限定してもOK
-    allow_headers=["*"],  # または ["Content-Type"] に限定してもOK
+    allow_methods=["*"],  # "GET", "POST", "OPTIONS" でもOK
+    allow_headers=["*"],  # "Content-Type" でもOK
 )
 
-# ✅ 画像アップロードAPI
 @app.post("/upload")
 async def upload_image(file: UploadFile = File(...)):
     result = await analyze_image(file)
